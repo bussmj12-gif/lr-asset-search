@@ -6,25 +6,17 @@
 <title>LR Busan Port — Asset Category Search</title>
 <style>
   :root {
-    --navy: #0a1628;
-    --navy2: #112240;
-    --steel: #1e3a5f;
-    --accent: #c8a96e;
-    --accent2: #e8c98e;
-    --text: #e8edf5;
-    --text2: #a0b0c8;
-    --border: #2a4a6e;
-    --green: #2dd4a0;
-    --red: #e05c5c;
-    --card: #162035;
-    --input-bg: #0d1e35;
+    --navy: #0a1628; --navy2: #112240; --steel: #1e3a5f;
+    --accent: #c8a96e; --accent2: #e8c98e; --text: #e8edf5;
+    --text2: #a0b0c8; --border: #2a4a6e; --green: #2dd4a0;
+    --red: #e05c5c; --card: #162035; --input-bg: #0d1e35;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: "Segoe UI", system-ui, sans-serif; background: var(--navy); color: var(--text); min-height: 100vh; }
   header { background: var(--navy2); border-bottom: 2px solid var(--accent); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
   .logo { display: flex; align-items: center; gap: 14px; }
   .logo-mark { width: 40px; height: 40px; background: var(--accent); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--navy); font-size: 14px; flex-shrink: 0; }
-  .logo-text strong { font-size: 15px; letter-spacing: 0.5px; color: var(--accent2); display: block; }
+  .logo-text strong { font-size: 15px; color: var(--accent2); display: block; }
   .logo-text span { font-size: 11px; color: var(--text2); }
   .header-actions { display: flex; gap: 10px; align-items: center; }
   .btn { padding: 7px 16px; border-radius: 5px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
@@ -33,11 +25,10 @@
   .btn-accent { background: var(--accent); color: var(--navy); border: 1px solid var(--accent); }
   .btn-accent:hover { background: var(--accent2); }
   .btn-danger { background: var(--red); color: #fff; border: 1px solid var(--red); }
-  .btn-danger:hover { opacity: 0.85; }
-  .btn-green { background: var(--green); color: var(--navy); border: 1px solid var(--green); font-weight: 700; }
+  .btn-green { background: var(--green); color: var(--navy); font-weight: 700; border: 1px solid var(--green); }
   main { max-width: 1200px; margin: 0 auto; padding: 36px 24px; }
   .search-wrap { position: relative; margin-bottom: 6px; }
-  .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text2); font-size: 18px; pointer-events: none; }
+  .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text2); pointer-events: none; }
   #searchInput { width: 100%; padding: 16px 20px 16px 50px; background: var(--input-bg); color: var(--text); border: 2px solid var(--border); border-radius: 8px; font-size: 17px; outline: none; transition: border-color 0.2s; }
   #searchInput:focus { border-color: var(--accent); }
   #searchInput::placeholder { color: var(--text2); }
@@ -62,8 +53,7 @@
   thead tr { background: var(--steel); }
   th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent2); white-space: nowrap; cursor: pointer; user-select: none; }
   th:hover { color: var(--accent); }
-  th.asc::after { content: " ▲"; }
-  th.desc::after { content: " ▼"; }
+  th.asc::after { content: " ▲"; } th.desc::after { content: " ▼"; }
   tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: var(--navy2); }
@@ -73,8 +63,8 @@
   td.mono { font-family: monospace; font-size: 13px; color: var(--text2); }
   .hl { background: rgba(200,169,110,0.25); border-radius: 2px; }
   .loading { text-align: center; padding: 64px 24px; color: var(--text2); }
-  .loading-spinner { font-size: 40px; animation: spin 1s linear infinite; display: block; margin-bottom: 16px; }
-  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .spin { font-size: 36px; display: inline-block; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
   .empty { text-align: center; padding: 64px 24px; color: var(--text2); }
   .empty-icon { font-size: 48px; margin-bottom: 12px; }
   .empty h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
@@ -86,8 +76,8 @@
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
   .modal-bg.show { display: flex; }
   .modal { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; width: 540px; max-width: calc(100vw - 32px); max-height: 90vh; overflow-y: auto; }
-  .modal h2 { font-size: 18px; margin-bottom: 6px; color: var(--accent2); }
-  .modal h2 small { font-size: 13px; color: var(--text2); font-weight: 400; display: block; margin-top: 2px; margin-bottom: 16px; }
+  .modal h2 { font-size: 18px; margin-bottom: 4px; color: var(--accent2); }
+  .modal h2 small { font-size: 13px; color: var(--text2); font-weight: 400; display: block; margin-bottom: 16px; }
   .form-row { margin-bottom: 16px; }
   .form-row label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
   .form-row input { width: 100%; padding: 10px 14px; background: var(--input-bg); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-size: 14px; outline: none; }
@@ -95,7 +85,7 @@
   .form-row input::placeholder { color: var(--text2); }
   .modal-actions { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
   .error-msg { color: var(--red); font-size: 13px; margin-top: 8px; }
-  .notice-box { background: rgba(200,169,110,0.1); border: 1px solid var(--accent); border-radius: 8px; padding: 14px 16px; margin-bottom: 20px; font-size: 13px; color: var(--accent2); line-height: 1.6; }
+  .notice-box { background: rgba(200,169,110,0.1); border: 1px solid var(--accent); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: var(--accent2); line-height: 1.6; }
   #toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; display: none; z-index: 9999; }
   #toast.show { display: block; }
   #toast.success { background: var(--green); color: var(--navy); }
@@ -104,7 +94,6 @@
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">
     <div class="logo-mark">LR</div>
@@ -124,34 +113,25 @@
     <span class="record-count" id="recordCount">Loading...</span>
     <span class="sync-info" id="syncInfo"></span>
   </div>
-
   <div class="search-wrap" id="searchWrap">
     <span class="search-icon">&#9906;</span>
     <input type="text" id="searchInput" placeholder="Search product name (e.g. Butterfly valve, Steel Plate, Pump...)" autocomplete="off" />
     <div id="autocomplete"></div>
   </div>
   <p class="search-hint">Type to search &middot; <strong id="matchCount">0</strong> products matched &middot; Click column headers to sort</p>
-
   <div class="filter-tags" id="filterTags"></div>
-
-  <div id="loadingState" class="loading">
-    <span class="loading-spinner">&#9696;</span>
-    <p>Loading data from Google Sheets...</p>
-  </div>
-
+  <div id="loadingState" class="loading"><span class="spin">&#9696;</span><p style="margin-top:12px">Loading data from Google Sheets...</p></div>
   <div class="table-wrap" id="tableWrap" style="display:none">
-    <table id="resultTable">
-      <thead>
-        <tr>
-          <th data-col="product" onclick="sortBy('product')">Product</th>
-          <th data-col="dwb_asset_category" onclick="sortBy('dwb_asset_category')">DWB Asset Category</th>
-          <th data-col="dwb_asset_type" onclick="sortBy('dwb_asset_type')">Asset Type</th>
-          <th data-col="dwb_unit" onclick="sortBy('dwb_unit')">Unit</th>
-          <th data-col="lr_rule" onclick="sortBy('lr_rule')">LR Rule</th>
-          <th data-col="fee_parameter" onclick="sortBy('fee_parameter')">Fee Parameter</th>
-          <th id="adminColHead" style="display:none">Actions</th>
-        </tr>
-      </thead>
+    <table>
+      <thead><tr>
+        <th data-col="product" onclick="sortBy('product')">Product</th>
+        <th data-col="dwb_asset_category" onclick="sortBy('dwb_asset_category')">DWB Asset Category</th>
+        <th data-col="dwb_asset_type" onclick="sortBy('dwb_asset_type')">Asset Type</th>
+        <th data-col="dwb_unit" onclick="sortBy('dwb_unit')">Unit</th>
+        <th data-col="lr_rule" onclick="sortBy('lr_rule')">LR Rule</th>
+        <th data-col="fee_parameter" onclick="sortBy('fee_parameter')">Fee Parameter</th>
+        <th id="adminColHead" style="display:none">Actions</th>
+      </tr></thead>
       <tbody id="tableBody"></tbody>
     </table>
   </div>
@@ -182,10 +162,8 @@
 <!-- ADD/EDIT MODAL -->
 <div class="modal-bg" id="editModal">
   <div class="modal">
-    <h2 id="editModalTitle">Add Product <small>Fields marked * are required</small></h2>
-    <div class="notice-box" id="editNotice" style="display:none">
-      &#x26A0;&#xFE0F; 수정 후 Google Sheets에도 반영됩니다. 웹사이트는 <strong>새로고침</strong> 시 업데이트됩니다.
-    </div>
+    <h2 id="editModalTitle">Add Product <small>* 필수 입력</small></h2>
+    <div class="notice-box">&#x26A0;&#xFE0F; 수정 후 Google Sheets에도 동일하게 반영해 주세요. 새로고침 시 업데이트됩니다.</div>
     <div class="form-row"><label>Product Name *</label><input type="text" id="editProduct" placeholder="e.g. Butterfly valve" /></div>
     <div class="form-row"><label>DWB Asset Category *</label><input type="text" id="editCategory" list="categoryList" placeholder="e.g. Valves" /><datalist id="categoryList"></datalist></div>
     <div class="form-row"><label>Asset Type</label><input type="text" id="editType" list="typeList" placeholder="e.g. Machinery Equipment" /><datalist id="typeList"></datalist></div>
@@ -205,12 +183,10 @@
   <div class="modal">
     <h2>Delete Record <small>Google Sheets에서 직접 삭제해 주세요</small></h2>
     <div class="notice-box">
-      &#x26A0;&#xFE0F; 삭제는 <strong>Google Sheets</strong>에서 직접 해당 행을 삭제하신 후 웹사이트를 새로고침하시면 반영됩니다.<br><br>
+      해당 행을 Google Sheets에서 직접 삭제하신 후 새로고침하시면 반영됩니다.<br><br>
       <a href="https://docs.google.com/spreadsheets/d/1bJwKHm_FqWvYsCo7NcWB-tebcwDgtI6okssfm6m-3l0/edit?gid=328182646" target="_blank" style="color:var(--accent2);font-weight:700">&#x1F4C4; Google Sheets 열기 &rarr;</a>
     </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('deleteModal')">닫기</button>
-    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('deleteModal')">닫기</button></div>
   </div>
 </div>
 
@@ -219,28 +195,29 @@
 <script>
 const CSV_URL = "https://docs.google.com/spreadsheets/d/1bJwKHm_FqWvYsCo7NcWB-tebcwDgtI6okssfm6m-3l0/export?format=csv&gid=328182646";
 const SHEETS_URL = "https://docs.google.com/spreadsheets/d/1bJwKHm_FqWvYsCo7NcWB-tebcwDgtI6okssfm6m-3l0/edit?gid=328182646";
-const ADMIN_HASH = "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8"; // SHA1("lr2024")
+// 비밀번호: lr2024 (btoa 인코딩)
+const ADMIN_PW = "bHIyMDI0";
 
-let data = [];
-let filtered = [];
-let searchTerm = "";
-let activeType = "";
-let sortCol = "product";
-let sortDir = "asc";
-let page = 1;
+let data = [], filtered = [], searchTerm = "", activeType = "";
+let sortCol = "product", sortDir = "asc", page = 1;
 const PAGE_SIZE = 25;
-let isAdmin = false;
-let editingIndex = null;
+let isAdmin = false, editingIndex = null;
 
-async function sha1(str) {
-  const buf = await crypto.subtle.digest("SHA-1", new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+function checkPassword() {
+  const pw = document.getElementById("passwordInput").value;
+  if (btoa(pw) === ADMIN_PW) {
+    isAdmin = true;
+    closeModal("passwordModal");
+    showAdminUI();
+    showToast("Admin mode enabled", "success");
+  } else {
+    document.getElementById("pwError").textContent = "Incorrect password. Please try again.";
+  }
 }
 
-// CSV 파싱
 function parseCSV(text) {
   const lines = text.split("\n");
-  const headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g,""));
+  const headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ""));
   const rows = [];
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
@@ -248,64 +225,210 @@ function parseCSV(text) {
     const vals = [];
     let inQ = false, cur = "";
     for (let c of line) {
-      if (c === "\"" ) inQ = !inQ;
+      if (c === "\"") inQ = !inQ;
       else if (c === "," && !inQ) { vals.push(cur); cur = ""; }
       else cur += c;
     }
     vals.push(cur);
     if (vals.length >= 2) {
       const obj = {};
-      headers.forEach((h, idx) => obj[h] = (vals[idx]||"").trim());
+      headers.forEach((h, idx) => obj[h] = (vals[idx] || "").trim());
       if (obj.product) rows.push(obj);
     }
   }
   return rows;
 }
 
-// Google Sheets에서 데이터 로드
 async function loadData() {
   try {
     const res = await fetch(CSV_URL + "&t=" + Date.now());
-    if (!res.ok) throw new Error("Fetch failed");
+    if (!res.ok) throw new Error("failed");
     const text = await res.text();
     data = parseCSV(text);
     document.getElementById("loadingState").style.display = "none";
     document.getElementById("tableWrap").style.display = "block";
     const now = new Date().toLocaleTimeString("ko-KR");
     document.getElementById("syncInfo").innerHTML = "&#x1F7E2; 최종 동기화: <span>" + now + "</span>";
-    buildTypeFilters();
-    buildDatalistOptions();
-    applyFilters();
+    buildTypeFilters(); buildDatalistOptions(); applyFilters();
   } catch(e) {
-    document.getElementById("loadingState").innerHTML = 
-      "<div class='empty-icon'>&#x26A0;&#xFE0F;</div><h3>데이터 로드 실패</h3><p>잠시 후 새로고침해 주세요.</p>";
+    document.getElementById("loadingState").innerHTML = "<div class='empty-icon'>&#x26A0;&#xFE0F;</div><h3>데이터 로드 실패</h3><p>새로고침해 주세요.</p>";
   }
 }
 
 function buildTypeFilters() {
   const types = [...new Set(data.map(d => d.dwb_asset_type).filter(Boolean))].sort();
-  const container = document.getElementById("filterTags");
-  container.innerHTML = types.map(t =>
-    "<span class=\"tag\" data-type=\"" + t.replace(/"/g,"&quot;") + "\" onclick=\"filterByType(this)\">" + t +
-    " <span style=\"opacity:0.6;font-size:10px\">(" + data.filter(d=>d.dwb_asset_type===t).length + ")</span></span>"
+  document.getElementById("filterTags").innerHTML = types.map(t =>
+    "<span class=\"tag\" data-type=\"" + t.replace(/"/g, "&quot;") + "\" onclick=\"filterByType(this)\">" + t +
+    " <span style=\"opacity:0.6;font-size:10px\">(" + data.filter(d => d.dwb_asset_type === t).length + ")</span></span>"
   ).join("");
 }
 
 function filterByType(el) {
   const type = el.dataset.type;
-  if (activeType === type) {
-    activeType = "";
-    document.querySelectorAll(".tag").forEach(t => t.classList.remove("active"));
-  } else {
-    activeType = type;
-    document.querySelectorAll(".tag").forEach(t => t.classList.toggle("active", t.dataset.type === type));
-  }
+  activeType = (activeType === type) ? "" : type;
+  document.querySelectorAll(".tag").forEach(t => t.classList.toggle("active", t.dataset.type === activeType));
   page = 1; applyFilters();
 }
 
-document.getElementById("searchInput").addEventListener("input", e => {
-  searchTerm = e.target.value.trim(); page = 1; applyFilters(); showAutocomplete();
-});
+function applyFilters() {
+  const q = searchTerm.toLowerCase();
+  filtered = data.filter(d => {
+    const ms = !q || (d.product||"").toLowerCase().includes(q) || (d.dwb_asset_category||"").toLowerCase().includes(q);
+    const mt = !activeType || d.dwb_asset_type === activeType;
+    return ms && mt;
+  });
+  filtered.sort((a, b) => {
+    const va = (a[sortCol]||"").toLowerCase(), vb = (b[sortCol]||"").toLowerCase();
+    return sortDir === "asc" ? va.localeCompare(vb) : vb.localeCompare(va);
+  });
+  document.getElementById("matchCount").textContent = filtered.length;
+  document.getElementById("recordCount").textContent = data.length + " records";
+  renderTable();
+}
+
+function showAutocomplete() {
+  const q = searchTerm.toLowerCase();
+  const box = document.getElementById("autocomplete");
+  if (!q) { box.style.display = "none"; return; }
+  const seen = new Set();
+  const matches = data.filter(d => {
+    if (!(d.product||"").toLowerCase().includes(q) || seen.has(d.product)) return false;
+    seen.add(d.product); return true;
+  }).slice(0, 8);
+  if (!matches.length) { box.style.display = "none"; return; }
+  const re = new RegExp(q.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&"), "gi");
+  box.innerHTML = matches.map(m =>
+    "<div class=\"ac-item\" onclick=\"selectAC('" + (m.product||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'") + "')\">" +
+    "<span>" + (m.product||"").replace(re, s => "<mark>" + s + "</mark>") + "</span>" +
+    "<span class=\"ac-badge\">" + (m.dwb_asset_category||"") + "</span></div>"
+  ).join("");
+  box.style.display = "block";
+}
+
+function hideAutocomplete() { document.getElementById("autocomplete").style.display = "none"; }
+function selectAC(p) { document.getElementById("searchInput").value = p; searchTerm = p; hideAutocomplete(); page = 1; applyFilters(); }
+
+function sortBy(col) {
+  sortDir = (sortCol === col && sortDir === "asc") ? "desc" : "asc";
+  sortCol = col;
+  document.querySelectorAll("th[data-col]").forEach(th => { th.classList.remove("asc","desc"); if(th.dataset.col===col) th.classList.add(sortDir); });
+  applyFilters();
+}
+
+function renderTable() {
+  const pageData = filtered.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
+  const tbody = document.getElementById("tableBody");
+  const empty = document.getElementById("emptyState");
+  if (!pageData.length) { tbody.innerHTML = ""; empty.style.display = "block"; document.getElementById("pagination").innerHTML = ""; return; }
+  empty.style.display = "none";
+  const q = searchTerm.toLowerCase();
+  const re = q ? new RegExp(q.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&"),"gi") : null;
+  const hl = t => re && t ? t.replace(re, s => "<span class=\"hl\">" + s + "</span>") : (t||"");
+  const dash = "<span style=\"opacity:0.3\">&#8212;</span>";
+  tbody.innerHTML = pageData.map(d => {
+    const ri = data.indexOf(d);
+    const ac = isAdmin ? "<td><button class=\"btn btn-ghost\" style=\"padding:4px 10px;font-size:12px;margin-right:4px\" onclick=\"openEditModal(" + ri + ")\">Edit</button><button class=\"btn btn-danger\" style=\"padding:4px 10px;font-size:12px\" onclick=\"openDeleteModal()\">Del</button></td>" : "";
+    return "<tr><td class=\"product\">" + hl(d.product) + "</td><td class=\"category\">" + hl(d.dwb_asset_category||"") + "</td>" +
+      "<td>" + (d.dwb_asset_type||dash) + "</td><td class=\"mono\">" + (d.dwb_unit||dash) + "</td>" +
+      "<td class=\"mono\" style=\"font-size:12px\">" + (d.lr_rule||dash) + "</td><td class=\"mono\">" + (d.fee_parameter||dash) + "</td>" + ac + "</tr>";
+  }).join("");
+  renderPagination();
+}
+
+function renderPagination() {
+  const total = Math.ceil(filtered.length / PAGE_SIZE);
+  if (total <= 1) { document.getElementById("pagination").innerHTML = ""; return; }
+  let h = "<button class=\"page-btn\" onclick=\"goPage(" + (page-1) + ")\" " + (page===1?"disabled":"") + ">&#8249; Prev</button>";
+  for (let p = 1; p <= total; p++) {
+    if (total > 7 && Math.abs(p-page) > 2 && p !== 1 && p !== total) { if (p===2||p===total-1) h += "<span style=\"color:var(--text2);padding:0 4px\">&#8230;</span>"; continue; }
+    h += "<button class=\"page-btn " + (p===page?"active":"") + "\" onclick=\"goPage(" + p + ")\">" + p + "</button>";
+  }
+  h += "<button class=\"page-btn\" onclick=\"goPage(" + (page+1) + ")\" " + (page===total?"disabled":"") + ">Next &#8250;</button>";
+  document.getElementById("pagination").innerHTML = h;
+}
+
+function goPage(p) {
+  const total = Math.ceil(filtered.length / PAGE_SIZE);
+  if (p < 1 || p > total) return;
+  page = p; renderTable();
+  document.querySelector("main").scrollIntoView({behavior:"smooth"});
+}
+
+function openPasswordModal() {
+  if (isAdmin) { logoutAdmin(); return; }
+  document.getElementById("passwordInput").value = "";
+  document.getElementById("pwError").textContent = "";
+  document.getElementById("passwordModal").classList.add("show");
+  setTimeout(() => document.getElementById("passwordInput").focus(), 100);
+}
+
+function logoutAdmin() { isAdmin = false; hideAdminUI(); showToast("Logged out", "success"); }
+
+function showAdminUI() {
+  document.getElementById("headerActions").innerHTML =
+    "<button class=\"btn btn-green\" onclick=\"reloadData()\">&#x21BB; 새로고침</button>" +
+    "<button class=\"btn btn-accent\" onclick=\"openEditModal(null)\">+ Add</button>" +
+    "<a href=\"" + SHEETS_URL + "\" target=\"_blank\" class=\"btn btn-ghost\">&#x1F4C4; Sheets</a>" +
+    "<button class=\"btn btn-ghost\" onclick=\"logoutAdmin()\">&#x1F513; Logout</button>";
+  document.getElementById("adminColHead").style.display = "";
+  renderTable();
+}
+
+function hideAdminUI() {
+  document.getElementById("headerActions").innerHTML = "<button class=\"btn btn-ghost\" onclick=\"openPasswordModal()\">&#x1F512; Admin</button>";
+  document.getElementById("adminColHead").style.display = "none";
+  renderTable();
+}
+
+async function reloadData() {
+  document.getElementById("tableWrap").style.display = "none";
+  document.getElementById("loadingState").style.display = "block";
+  document.getElementById("loadingState").innerHTML = "<span class=\"spin\">&#9696;</span><p style=\"margin-top:12px\">Reloading...</p>";
+  await loadData();
+  if (isAdmin) showAdminUI();
+  showToast("새로고침 완료!", "success");
+}
+
+function buildDatalistOptions() {
+  const cats = [...new Set(data.map(d => d.dwb_asset_category).filter(Boolean))].sort();
+  const types = [...new Set(data.map(d => d.dwb_asset_type).filter(Boolean))].sort();
+  document.getElementById("categoryList").innerHTML = cats.map(c => "<option value=\"" + c.replace(/"/g,"&quot;") + "\">").join("");
+  document.getElementById("typeList").innerHTML = types.map(t => "<option value=\"" + t.replace(/"/g,"&quot;") + "\">").join("");
+}
+
+function openEditModal(idx) {
+  editingIndex = idx;
+  const d = idx !== null ? data[idx] : null;
+  document.getElementById("editModalTitle").textContent = idx !== null ? "Edit Product" : "Add Product";
+  document.getElementById("editProduct").value = d ? (d.product||"") : "";
+  document.getElementById("editCategory").value = d ? (d.dwb_asset_category||"") : "";
+  document.getElementById("editType").value = d ? (d.dwb_asset_type||"") : "";
+  document.getElementById("editUnit").value = d ? (d.dwb_unit||"") : "";
+  document.getElementById("editRule").value = d ? (d.lr_rule||"") : "";
+  document.getElementById("editFeeParam").value = d ? (d.fee_parameter||"") : "";
+  document.getElementById("editError").textContent = "";
+  document.getElementById("editModal").classList.add("show");
+}
+
+function saveRecord() {
+  const product = document.getElementById("editProduct").value.trim();
+  const category = document.getElementById("editCategory").value.trim();
+  if (!product || !category) { document.getElementById("editError").textContent = "Product name and Category are required."; return; }
+  const record = { product, dwb_asset_category: category, dwb_asset_type: document.getElementById("editType").value.trim(), dwb_unit: document.getElementById("editUnit").value.trim(), lr_rule: document.getElementById("editRule").value.trim(), fee_parameter: document.getElementById("editFeeParam").value.trim() };
+  if (editingIndex !== null) data[editingIndex] = record; else data.unshift(record);
+  buildTypeFilters(); buildDatalistOptions(); applyFilters(); closeModal("editModal");
+  showToast("저장됨! Google Sheets에도 업데이트해 주세요.", "success");
+}
+
+function openDeleteModal() { document.getElementById("deleteModal").classList.add("show"); }
+function closeModal(id) { document.getElementById(id).classList.remove("show"); }
+function showToast(msg, type) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = "show " + type;
+  setTimeout(() => t.className = "", 3000);
+}
+
+document.getElementById("searchInput").addEventListener("input", e => { searchTerm = e.target.value.trim(); page = 1; applyFilters(); showAutocomplete(); });
 document.getElementById("searchInput").addEventListener("keydown", e => {
   const items = document.querySelectorAll(".ac-item");
   let active = [...items].findIndex(i => i.classList.contains("active"));
@@ -316,197 +439,8 @@ document.getElementById("searchInput").addEventListener("keydown", e => {
 });
 document.addEventListener("click", e => {
   if (!e.target.closest("#searchWrap")) hideAutocomplete();
-  ["passwordModal","editModal","deleteModal"].forEach(id => {
-    const el = document.getElementById(id);
-    if (e.target === el) el.classList.remove("show");
-  });
+  ["passwordModal","editModal","deleteModal"].forEach(id => { if (e.target===document.getElementById(id)) closeModal(id); });
 });
-
-function applyFilters() {
-  const q = searchTerm.toLowerCase();
-  filtered = data.filter(d => {
-    const ms = !q || (d.product||"").toLowerCase().includes(q) || (d.dwb_asset_category||"").toLowerCase().includes(q);
-    const mt = !activeType || d.dwb_asset_type === activeType;
-    return ms && mt;
-  });
-  filtered.sort((a,b) => {
-    const va=(a[sortCol]||"").toLowerCase(), vb=(b[sortCol]||"").toLowerCase();
-    return sortDir==="asc" ? va.localeCompare(vb) : vb.localeCompare(va);
-  });
-  document.getElementById("matchCount").textContent = filtered.length;
-  document.getElementById("recordCount").textContent = data.length + " records";
-  renderTable();
-}
-
-function showAutocomplete() {
-  const q = searchTerm.toLowerCase();
-  const box = document.getElementById("autocomplete");
-  if (!q) { box.style.display="none"; return; }
-  const seen = new Set();
-  const matches = data.filter(d => {
-    if (!(d.product||"").toLowerCase().includes(q)) return false;
-    if (seen.has(d.product)) return false;
-    seen.add(d.product); return true;
-  }).slice(0,8);
-  if (!matches.length) { box.style.display="none"; return; }
-  const re = new RegExp(q.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&"),"gi");
-  box.innerHTML = matches.map(m => {
-    const hl = (m.product||"").replace(re, s=>"<mark>"+s+"</mark>");
-    return "<div class=\"ac-item\" onclick=\"selectAC('"+( m.product||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'")+"')\">" +
-      "<span>"+hl+"</span><span class=\"ac-badge\">"+(m.dwb_asset_category||"")+"</span></div>";
-  }).join("");
-  box.style.display="block";
-}
-function hideAutocomplete() { document.getElementById("autocomplete").style.display="none"; }
-function selectAC(product) {
-  document.getElementById("searchInput").value=product; searchTerm=product;
-  hideAutocomplete(); page=1; applyFilters();
-}
-
-function sortBy(col) {
-  if (sortCol===col) sortDir=sortDir==="asc"?"desc":"asc";
-  else { sortCol=col; sortDir="asc"; }
-  document.querySelectorAll("th[data-col]").forEach(th => {
-    th.classList.remove("asc","desc");
-    if (th.dataset.col===col) th.classList.add(sortDir);
-  });
-  applyFilters();
-}
-
-function renderTable() {
-  const start=(page-1)*PAGE_SIZE;
-  const pageData=filtered.slice(start,start+PAGE_SIZE);
-  const tbody=document.getElementById("tableBody");
-  const empty=document.getElementById("emptyState");
-  if (!pageData.length) { tbody.innerHTML=""; empty.style.display="block"; document.getElementById("pagination").innerHTML=""; return; }
-  empty.style.display="none";
-  const q=searchTerm.toLowerCase();
-  function hl(text) {
-    if (!q||!text) return text||"";
-    const re=new RegExp(q.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&"),"gi");
-    return text.replace(re,s=>"<span class=\"hl\">"+s+"</span>");
-  }
-  const dash="<span style=\"opacity:0.3\">&#8212;</span>";
-  tbody.innerHTML=pageData.map(d => {
-    const realIdx=data.indexOf(d);
-    const adminCells=isAdmin
-      ? "<td><button class=\"btn btn-ghost\" style=\"padding:4px 10px;font-size:12px;margin-right:4px\" onclick=\"openEditModal("+realIdx+")\" >Edit</button><button class=\"btn btn-danger\" style=\"padding:4px 10px;font-size:12px\" onclick=\"openDeleteModal("+realIdx+")\" >Del</button></td>"
-      : "";
-    return "<tr><td class=\"product\">"+hl(d.product)+"</td><td class=\"category\">"+hl(d.dwb_asset_category||"")+"</td>"+
-      "<td>"+(d.dwb_asset_type||dash)+"</td><td class=\"mono\">"+(d.dwb_unit||dash)+"</td>"+
-      "<td class=\"mono\" style=\"font-size:12px\">"+(d.lr_rule||dash)+"</td><td class=\"mono\">"+(d.fee_parameter||dash)+"</td>"+
-      adminCells+"</tr>";
-  }).join("");
-  renderPagination();
-}
-
-function renderPagination() {
-  const total=Math.ceil(filtered.length/PAGE_SIZE);
-  if (total<=1) { document.getElementById("pagination").innerHTML=""; return; }
-  let html="<button class=\"page-btn\" onclick=\"goPage("+(page-1)+")\" "+(page===1?"disabled":"")+">&#8249; Prev</button>";
-  for (let p=1;p<=total;p++) {
-    if (total>7&&Math.abs(p-page)>2&&p!==1&&p!==total) { if (p===2||p===total-1) html+="<span style=\"color:var(--text2);padding:0 4px\">&#8230;</span>"; continue; }
-    html+="<button class=\"page-btn "+(p===page?"active":"")+"\" onclick=\"goPage("+p+")\">"+p+"</button>";
-  }
-  html+="<button class=\"page-btn\" onclick=\"goPage("+(page+1)+")\" "+(page===total?"disabled":"")+">Next &#8250;</button>";
-  document.getElementById("pagination").innerHTML=html;
-}
-function goPage(p) {
-  const total=Math.ceil(filtered.length/PAGE_SIZE);
-  if (p<1||p>total) return;
-  page=p; renderTable();
-  document.querySelector("main").scrollIntoView({behavior:"smooth"});
-}
-
-function openPasswordModal() {
-  if (isAdmin) { logoutAdmin(); return; }
-  document.getElementById("passwordInput").value="";
-  document.getElementById("pwError").textContent="";
-  document.getElementById("passwordModal").classList.add("show");
-  setTimeout(()=>document.getElementById("passwordInput").focus(),100);
-}
-async function checkPassword() {
-  const pw=document.getElementById("passwordInput").value;
-  const hash=await sha1(pw);
-  if (hash===ADMIN_HASH) {
-    isAdmin=true; closeModal("passwordModal"); showAdminUI();
-    showToast("Admin mode enabled","success");
-  } else {
-    document.getElementById("pwError").textContent="Incorrect password.";
-  }
-}
-function logoutAdmin() { isAdmin=false; hideAdminUI(); showToast("Logged out","success"); }
-function showAdminUI() {
-  document.getElementById("headerActions").innerHTML=
-    "<button class=\"btn btn-green\" onclick=\"reloadData()\">&#x21BB; 새로고침</button>"+
-    "<button class=\"btn btn-accent\" onclick=\"openEditModal(null)\">+ Add Product</button>"+
-    "<a href=\""+SHEETS_URL+"\" target=\"_blank\" class=\"btn btn-ghost\">&#x1F4C4; Sheets 열기</a>"+
-    "<button class=\"btn btn-ghost\" onclick=\"logoutAdmin()\">&#x1F513; Logout</button>";
-  document.getElementById("adminColHead").style.display="";
-  renderTable();
-}
-function hideAdminUI() {
-  document.getElementById("headerActions").innerHTML="<button class=\"btn btn-ghost\" onclick=\"openPasswordModal()\">&#x1F512; Admin</button>";
-  document.getElementById("adminColHead").style.display="none";
-  renderTable();
-}
-async function reloadData() {
-  document.getElementById("tableWrap").style.display="none";
-  document.getElementById("loadingState").style.display="block";
-  document.getElementById("loadingState").innerHTML="<span class=\"loading-spinner\">&#9696;</span><p>Reloading from Google Sheets...</p>";
-  await loadData();
-  if (isAdmin) showAdminUI();
-  showToast("데이터 새로고침 완료!","success");
-}
-
-function buildDatalistOptions() {
-  const cats=[...new Set(data.map(d=>d.dwb_asset_category).filter(Boolean))].sort();
-  const types=[...new Set(data.map(d=>d.dwb_asset_type).filter(Boolean))].sort();
-  document.getElementById("categoryList").innerHTML=cats.map(c=>"<option value=\""+c.replace(/"/g,"&quot;")+"\">").join("");
-  document.getElementById("typeList").innerHTML=types.map(t=>"<option value=\""+t.replace(/"/g,"&quot;")+"\">").join("");
-}
-
-function openEditModal(idx) {
-  editingIndex=idx;
-  const d=idx!==null?data[idx]:null;
-  document.getElementById("editModalTitle").textContent=idx!==null?"Edit Product":"Add Product";
-  document.getElementById("editNotice").style.display="block";
-  document.getElementById("editProduct").value=d?(d.product||""):"";
-  document.getElementById("editCategory").value=d?(d.dwb_asset_category||""):"";
-  document.getElementById("editType").value=d?(d.dwb_asset_type||""):"";
-  document.getElementById("editUnit").value=d?(d.dwb_unit||""):"";
-  document.getElementById("editRule").value=d?(d.lr_rule||""):"";
-  document.getElementById("editFeeParam").value=d?(d.fee_parameter||""):"";
-  document.getElementById("editError").textContent="";
-  document.getElementById("editModal").classList.add("show");
-}
-
-function saveRecord() {
-  const product=document.getElementById("editProduct").value.trim();
-  const category=document.getElementById("editCategory").value.trim();
-  if (!product||!category) { document.getElementById("editError").textContent="Product name and Category are required."; return; }
-  const record={
-    product, dwb_asset_category:category,
-    dwb_asset_type:document.getElementById("editType").value.trim(),
-    dwb_unit:document.getElementById("editUnit").value.trim(),
-    lr_rule:document.getElementById("editRule").value.trim(),
-    fee_parameter:document.getElementById("editFeeParam").value.trim()
-  };
-  if (editingIndex!==null) { data[editingIndex]=record; showToast("수정되었습니다. Google Sheets도 업데이트해 주세요!","success"); }
-  else { data.unshift(record); showToast("추가되었습니다. Google Sheets도 업데이트해 주세요!","success"); }
-  buildTypeFilters(); buildDatalistOptions(); applyFilters(); closeModal("editModal");
-}
-
-function openDeleteModal(idx) {
-  document.getElementById("deleteModal").classList.add("show");
-}
-
-function closeModal(id) { document.getElementById(id).classList.remove("show"); }
-function showToast(msg,type) {
-  const t=document.getElementById("toast");
-  t.textContent=msg; t.className="show "+type;
-  setTimeout(()=>t.className="",3000);
-}
 
 loadData();
 </script>
