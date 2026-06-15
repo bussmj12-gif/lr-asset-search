@@ -19,13 +19,13 @@
   .logo-text strong { font-size: 15px; color: var(--accent2); display: block; }
   .logo-text span { font-size: 11px; color: var(--text2); }
   .header-actions { display: flex; gap: 10px; align-items: center; }
-  .btn { padding: 7px 16px; border-radius: 5px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn { padding: 7px 16px; border-radius: 5px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
   .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
   .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
   .btn-accent { background: var(--accent); color: var(--navy); border: 1px solid var(--accent); }
   .btn-accent:hover { background: var(--accent2); }
-  .btn-danger { background: var(--red); color: #fff; border: 1px solid var(--red); }
   .btn-green { background: var(--green); color: var(--navy); font-weight: 700; border: 1px solid var(--green); }
+  .btn-green:hover { opacity: 0.85; }
   main { max-width: 1200px; margin: 0 auto; padding: 36px 24px; }
   .search-wrap { position: relative; margin-bottom: 6px; }
   .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text2); pointer-events: none; }
@@ -48,6 +48,8 @@
   .record-count { font-size: 13px; padding: 3px 12px; border-radius: 20px; background: var(--steel); color: var(--text2); font-weight: 600; }
   .sync-info { font-size: 12px; color: var(--text2); margin-left: auto; }
   .sync-info span { color: var(--green); }
+  .admin-banner { background: rgba(200,169,110,0.1); border: 1px solid var(--accent); border-radius: 8px; padding: 12px 18px; margin-bottom: 20px; font-size: 13px; color: var(--accent2); display: none; align-items: center; gap: 12px; }
+  .admin-banner.show { display: flex; }
   .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
   table { width: 100%; border-collapse: collapse; font-size: 14px; }
   thead tr { background: var(--steel); }
@@ -75,7 +77,7 @@
   .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
   .modal-bg.show { display: flex; }
-  .modal { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; width: 540px; max-width: calc(100vw - 32px); max-height: 90vh; overflow-y: auto; }
+  .modal { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; width: 460px; max-width: calc(100vw - 32px); }
   .modal h2 { font-size: 18px; margin-bottom: 4px; color: var(--accent2); }
   .modal h2 small { font-size: 13px; color: var(--text2); font-weight: 400; display: block; margin-bottom: 16px; }
   .form-row { margin-bottom: 16px; }
@@ -85,7 +87,6 @@
   .form-row input::placeholder { color: var(--text2); }
   .modal-actions { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
   .error-msg { color: var(--red); font-size: 13px; margin-top: 8px; }
-  .notice-box { background: rgba(200,169,110,0.1); border: 1px solid var(--accent); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: var(--accent2); line-height: 1.6; }
   #toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; display: none; z-index: 9999; }
   #toast.show { display: block; }
   #toast.success { background: var(--green); color: var(--navy); }
@@ -113,14 +114,28 @@
     <span class="record-count" id="recordCount">Loading...</span>
     <span class="sync-info" id="syncInfo"></span>
   </div>
+
+  <!-- 관리자 안내 배너 -->
+  <div class="admin-banner" id="adminBanner">
+    &#x1F4C4; 데이터 수정은 Google Sheets에서 직접 해주세요.
+    <a href="https://docs.google.com/spreadsheets/d/1bJwKHm_FqWvYsCo7NcWB-tebcwDgtI6okssfm6m-3l0/edit?gid=328182646" target="_blank" class="btn btn-accent" style="margin-left:auto">Google Sheets 열기 &rarr;</a>
+    <button class="btn btn-green" onclick="reloadData()">&#x21BB; 새로고침</button>
+  </div>
+
   <div class="search-wrap" id="searchWrap">
     <span class="search-icon">&#9906;</span>
     <input type="text" id="searchInput" placeholder="Search product name (e.g. Butterfly valve, Steel Plate, Pump...)" autocomplete="off" />
     <div id="autocomplete"></div>
   </div>
   <p class="search-hint">Type to search &middot; <strong id="matchCount">0</strong> products matched &middot; Click column headers to sort</p>
+
   <div class="filter-tags" id="filterTags"></div>
-  <div id="loadingState" class="loading"><span class="spin">&#9696;</span><p style="margin-top:12px">Loading data from Google Sheets...</p></div>
+
+  <div id="loadingState" class="loading">
+    <span class="spin">&#9696;</span>
+    <p style="margin-top:12px">Loading data from Google Sheets...</p>
+  </div>
+
   <div class="table-wrap" id="tableWrap" style="display:none">
     <table>
       <thead><tr>
@@ -130,11 +145,11 @@
         <th data-col="dwb_unit" onclick="sortBy('dwb_unit')">Unit</th>
         <th data-col="lr_rule" onclick="sortBy('lr_rule')">LR Rule</th>
         <th data-col="fee_parameter" onclick="sortBy('fee_parameter')">Fee Parameter</th>
-        <th id="adminColHead" style="display:none">Actions</th>
       </tr></thead>
       <tbody id="tableBody"></tbody>
     </table>
   </div>
+
   <div class="empty" id="emptyState" style="display:none">
     <div class="empty-icon">&#x1F50D;</div>
     <h3>No results found</h3>
@@ -146,7 +161,7 @@
 <!-- PASSWORD MODAL -->
 <div class="modal-bg" id="passwordModal">
   <div class="modal">
-    <h2>Admin Login <small>Enter password to unlock edit mode</small></h2>
+    <h2>Admin Login <small>비밀번호를 입력하세요</small></h2>
     <div class="form-row">
       <label>Password</label>
       <input type="password" id="passwordInput" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')checkPassword()" />
@@ -159,49 +174,16 @@
   </div>
 </div>
 
-<!-- ADD/EDIT MODAL -->
-<div class="modal-bg" id="editModal">
-  <div class="modal">
-    <h2 id="editModalTitle">Add Product <small>* 필수 입력</small></h2>
-    <div class="notice-box">&#x26A0;&#xFE0F; 수정 후 Google Sheets에도 동일하게 반영해 주세요. 새로고침 시 업데이트됩니다.</div>
-    <div class="form-row"><label>Product Name *</label><input type="text" id="editProduct" placeholder="e.g. Butterfly valve" /></div>
-    <div class="form-row"><label>DWB Asset Category *</label><input type="text" id="editCategory" list="categoryList" placeholder="e.g. Valves" /><datalist id="categoryList"></datalist></div>
-    <div class="form-row"><label>Asset Type</label><input type="text" id="editType" list="typeList" placeholder="e.g. Machinery Equipment" /><datalist id="typeList"></datalist></div>
-    <div class="form-row"><label>Unit</label><input type="text" id="editUnit" placeholder="e.g. pcs, batch, kg" /></div>
-    <div class="form-row"><label>LR Rule</label><input type="text" id="editRule" placeholder="e.g. CLASS MACH Part 5" /></div>
-    <div class="form-row"><label>Fee Parameter</label><input type="text" id="editFeeParam" placeholder="e.g. Valve Dia (mm)" /></div>
-    <div class="error-msg" id="editError"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('editModal')">Cancel</button>
-      <button class="btn btn-accent" onclick="saveRecord()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- DELETE MODAL -->
-<div class="modal-bg" id="deleteModal">
-  <div class="modal">
-    <h2>Delete Record <small>Google Sheets에서 직접 삭제해 주세요</small></h2>
-    <div class="notice-box">
-      해당 행을 Google Sheets에서 직접 삭제하신 후 새로고침하시면 반영됩니다.<br><br>
-      <a href="https://docs.google.com/spreadsheets/d/1bJwKHm_FqWvYsCo7NcWB-tebcwDgtI6okssfm6m-3l0/edit?gid=328182646" target="_blank" style="color:var(--accent2);font-weight:700">&#x1F4C4; Google Sheets 열기 &rarr;</a>
-    </div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('deleteModal')">닫기</button></div>
-  </div>
-</div>
-
 <div id="toast"></div>
 
 <script>
 const CSV_URL = "https://docs.google.com/spreadsheets/d/1bJwKHm_FqWvYsCo7NcWB-tebcwDgtI6okssfm6m-3l0/export?format=csv&gid=328182646";
-const SHEETS_URL = "https://docs.google.com/spreadsheets/d/1bJwKHm_FqWvYsCo7NcWB-tebcwDgtI6okssfm6m-3l0/edit?gid=328182646";
-// 비밀번호: lr2024 (btoa 인코딩)
-const ADMIN_PW = "bHIyMDI0";
+const ADMIN_PW = "bHIyMDI0"; // btoa("lr2024")
 
 let data = [], filtered = [], searchTerm = "", activeType = "";
 let sortCol = "product", sortDir = "asc", page = 1;
 const PAGE_SIZE = 25;
-let isAdmin = false, editingIndex = null;
+let isAdmin = false;
 
 function checkPassword() {
   const pw = document.getElementById("passwordInput").value;
@@ -232,7 +214,7 @@ function parseCSV(text) {
     vals.push(cur);
     if (vals.length >= 2) {
       const obj = {};
-      headers.forEach((h, idx) => obj[h] = (vals[idx] || "").trim());
+      headers.forEach((h, idx) => obj[h] = (vals[idx]||"").trim());
       if (obj.product) rows.push(obj);
     }
   }
@@ -249,17 +231,27 @@ async function loadData() {
     document.getElementById("tableWrap").style.display = "block";
     const now = new Date().toLocaleTimeString("ko-KR");
     document.getElementById("syncInfo").innerHTML = "&#x1F7E2; 최종 동기화: <span>" + now + "</span>";
-    buildTypeFilters(); buildDatalistOptions(); applyFilters();
+    buildTypeFilters();
+    applyFilters();
   } catch(e) {
-    document.getElementById("loadingState").innerHTML = "<div class='empty-icon'>&#x26A0;&#xFE0F;</div><h3>데이터 로드 실패</h3><p>새로고침해 주세요.</p>";
+    document.getElementById("loadingState").innerHTML =
+      "<div class='empty-icon'>&#x26A0;&#xFE0F;</div><h3>데이터 로드 실패</h3><p>새로고침해 주세요.</p>";
   }
+}
+
+async function reloadData() {
+  document.getElementById("tableWrap").style.display = "none";
+  document.getElementById("loadingState").style.display = "block";
+  document.getElementById("loadingState").innerHTML = "<span class=\"spin\">&#9696;</span><p style=\"margin-top:12px\">Reloading...</p>";
+  await loadData();
+  showToast("새로고침 완료!", "success");
 }
 
 function buildTypeFilters() {
   const types = [...new Set(data.map(d => d.dwb_asset_type).filter(Boolean))].sort();
   document.getElementById("filterTags").innerHTML = types.map(t =>
-    "<span class=\"tag\" data-type=\"" + t.replace(/"/g, "&quot;") + "\" onclick=\"filterByType(this)\">" + t +
-    " <span style=\"opacity:0.6;font-size:10px\">(" + data.filter(d => d.dwb_asset_type === t).length + ")</span></span>"
+    "<span class=\"tag\" data-type=\"" + t.replace(/"/g,"&quot;") + "\" onclick=\"filterByType(this)\">" + t +
+    " <span style=\"opacity:0.6;font-size:10px\">(" + data.filter(d=>d.dwb_asset_type===t).length + ")</span></span>"
   ).join("");
 }
 
@@ -277,9 +269,9 @@ function applyFilters() {
     const mt = !activeType || d.dwb_asset_type === activeType;
     return ms && mt;
   });
-  filtered.sort((a, b) => {
-    const va = (a[sortCol]||"").toLowerCase(), vb = (b[sortCol]||"").toLowerCase();
-    return sortDir === "asc" ? va.localeCompare(vb) : vb.localeCompare(va);
+  filtered.sort((a,b) => {
+    const va=(a[sortCol]||"").toLowerCase(), vb=(b[sortCol]||"").toLowerCase();
+    return sortDir==="asc" ? va.localeCompare(vb) : vb.localeCompare(va);
   });
   document.getElementById("matchCount").textContent = filtered.length;
   document.getElementById("recordCount").textContent = data.length + " records";
@@ -289,27 +281,27 @@ function applyFilters() {
 function showAutocomplete() {
   const q = searchTerm.toLowerCase();
   const box = document.getElementById("autocomplete");
-  if (!q) { box.style.display = "none"; return; }
+  if (!q) { box.style.display="none"; return; }
   const seen = new Set();
   const matches = data.filter(d => {
     if (!(d.product||"").toLowerCase().includes(q) || seen.has(d.product)) return false;
     seen.add(d.product); return true;
-  }).slice(0, 8);
-  if (!matches.length) { box.style.display = "none"; return; }
-  const re = new RegExp(q.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&"), "gi");
+  }).slice(0,8);
+  if (!matches.length) { box.style.display="none"; return; }
+  const re = new RegExp(q.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&"),"gi");
   box.innerHTML = matches.map(m =>
     "<div class=\"ac-item\" onclick=\"selectAC('" + (m.product||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'") + "')\">" +
-    "<span>" + (m.product||"").replace(re, s => "<mark>" + s + "</mark>") + "</span>" +
+    "<span>" + (m.product||"").replace(re,s=>"<mark>"+s+"</mark>") + "</span>" +
     "<span class=\"ac-badge\">" + (m.dwb_asset_category||"") + "</span></div>"
   ).join("");
-  box.style.display = "block";
+  box.style.display="block";
 }
 
-function hideAutocomplete() { document.getElementById("autocomplete").style.display = "none"; }
-function selectAC(p) { document.getElementById("searchInput").value = p; searchTerm = p; hideAutocomplete(); page = 1; applyFilters(); }
+function hideAutocomplete() { document.getElementById("autocomplete").style.display="none"; }
+function selectAC(p) { document.getElementById("searchInput").value=p; searchTerm=p; hideAutocomplete(); page=1; applyFilters(); }
 
 function sortBy(col) {
-  sortDir = (sortCol === col && sortDir === "asc") ? "desc" : "asc";
+  sortDir = (sortCol===col && sortDir==="asc") ? "desc" : "asc";
   sortCol = col;
   document.querySelectorAll("th[data-col]").forEach(th => { th.classList.remove("asc","desc"); if(th.dataset.col===col) th.classList.add(sortDir); });
   applyFilters();
@@ -319,127 +311,85 @@ function renderTable() {
   const pageData = filtered.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
   const tbody = document.getElementById("tableBody");
   const empty = document.getElementById("emptyState");
-  if (!pageData.length) { tbody.innerHTML = ""; empty.style.display = "block"; document.getElementById("pagination").innerHTML = ""; return; }
-  empty.style.display = "none";
+  if (!pageData.length) { tbody.innerHTML=""; empty.style.display="block"; document.getElementById("pagination").innerHTML=""; return; }
+  empty.style.display="none";
   const q = searchTerm.toLowerCase();
   const re = q ? new RegExp(q.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&"),"gi") : null;
-  const hl = t => re && t ? t.replace(re, s => "<span class=\"hl\">" + s + "</span>") : (t||"");
+  const hl = t => re && t ? t.replace(re,s=>"<span class=\"hl\">"+s+"</span>") : (t||"");
   const dash = "<span style=\"opacity:0.3\">&#8212;</span>";
-  tbody.innerHTML = pageData.map(d => {
-    const ri = data.indexOf(d);
-    const ac = isAdmin ? "<td><button class=\"btn btn-ghost\" style=\"padding:4px 10px;font-size:12px;margin-right:4px\" onclick=\"openEditModal(" + ri + ")\">Edit</button><button class=\"btn btn-danger\" style=\"padding:4px 10px;font-size:12px\" onclick=\"openDeleteModal()\">Del</button></td>" : "";
-    return "<tr><td class=\"product\">" + hl(d.product) + "</td><td class=\"category\">" + hl(d.dwb_asset_category||"") + "</td>" +
-      "<td>" + (d.dwb_asset_type||dash) + "</td><td class=\"mono\">" + (d.dwb_unit||dash) + "</td>" +
-      "<td class=\"mono\" style=\"font-size:12px\">" + (d.lr_rule||dash) + "</td><td class=\"mono\">" + (d.fee_parameter||dash) + "</td>" + ac + "</tr>";
-  }).join("");
+  tbody.innerHTML = pageData.map(d =>
+    "<tr><td class=\"product\">"+hl(d.product)+"</td>" +
+    "<td class=\"category\">"+hl(d.dwb_asset_category||"")+"</td>" +
+    "<td>"+(d.dwb_asset_type||dash)+"</td>" +
+    "<td class=\"mono\">"+(d.dwb_unit||dash)+"</td>" +
+    "<td class=\"mono\" style=\"font-size:12px\">"+(d.lr_rule||dash)+"</td>" +
+    "<td class=\"mono\">"+(d.fee_parameter||dash)+"</td></tr>"
+  ).join("");
   renderPagination();
 }
 
 function renderPagination() {
-  const total = Math.ceil(filtered.length / PAGE_SIZE);
-  if (total <= 1) { document.getElementById("pagination").innerHTML = ""; return; }
-  let h = "<button class=\"page-btn\" onclick=\"goPage(" + (page-1) + ")\" " + (page===1?"disabled":"") + ">&#8249; Prev</button>";
-  for (let p = 1; p <= total; p++) {
-    if (total > 7 && Math.abs(p-page) > 2 && p !== 1 && p !== total) { if (p===2||p===total-1) h += "<span style=\"color:var(--text2);padding:0 4px\">&#8230;</span>"; continue; }
-    h += "<button class=\"page-btn " + (p===page?"active":"") + "\" onclick=\"goPage(" + p + ")\">" + p + "</button>";
+  const total = Math.ceil(filtered.length/PAGE_SIZE);
+  if (total<=1) { document.getElementById("pagination").innerHTML=""; return; }
+  let h = "<button class=\"page-btn\" onclick=\"goPage("+(page-1)+")\" "+(page===1?"disabled":"")+">&#8249; Prev</button>";
+  for (let p=1;p<=total;p++) {
+    if (total>7&&Math.abs(p-page)>2&&p!==1&&p!==total) { if(p===2||p===total-1) h+="<span style=\"color:var(--text2);padding:0 4px\">&#8230;</span>"; continue; }
+    h+="<button class=\"page-btn "+(p===page?"active":"")+" \" onclick=\"goPage("+p+")\">"+p+"</button>";
   }
-  h += "<button class=\"page-btn\" onclick=\"goPage(" + (page+1) + ")\" " + (page===total?"disabled":"") + ">Next &#8250;</button>";
-  document.getElementById("pagination").innerHTML = h;
+  h+="<button class=\"page-btn\" onclick=\"goPage("+(page+1)+")\" "+(page===total?"disabled":"")+">Next &#8250;</button>";
+  document.getElementById("pagination").innerHTML=h;
 }
 
 function goPage(p) {
-  const total = Math.ceil(filtered.length / PAGE_SIZE);
-  if (p < 1 || p > total) return;
-  page = p; renderTable();
+  const total=Math.ceil(filtered.length/PAGE_SIZE);
+  if(p<1||p>total) return;
+  page=p; renderTable();
   document.querySelector("main").scrollIntoView({behavior:"smooth"});
 }
 
 function openPasswordModal() {
   if (isAdmin) { logoutAdmin(); return; }
-  document.getElementById("passwordInput").value = "";
-  document.getElementById("pwError").textContent = "";
+  document.getElementById("passwordInput").value="";
+  document.getElementById("pwError").textContent="";
   document.getElementById("passwordModal").classList.add("show");
-  setTimeout(() => document.getElementById("passwordInput").focus(), 100);
+  setTimeout(()=>document.getElementById("passwordInput").focus(),100);
 }
-
-function logoutAdmin() { isAdmin = false; hideAdminUI(); showToast("Logged out", "success"); }
 
 function showAdminUI() {
   document.getElementById("headerActions").innerHTML =
-    "<button class=\"btn btn-green\" onclick=\"reloadData()\">&#x21BB; 새로고침</button>" +
-    "<button class=\"btn btn-accent\" onclick=\"openEditModal(null)\">+ Add</button>" +
-    "<a href=\"" + SHEETS_URL + "\" target=\"_blank\" class=\"btn btn-ghost\">&#x1F4C4; Sheets</a>" +
     "<button class=\"btn btn-ghost\" onclick=\"logoutAdmin()\">&#x1F513; Logout</button>";
-  document.getElementById("adminColHead").style.display = "";
-  renderTable();
+  document.getElementById("adminBanner").classList.add("show");
 }
 
-function hideAdminUI() {
-  document.getElementById("headerActions").innerHTML = "<button class=\"btn btn-ghost\" onclick=\"openPasswordModal()\">&#x1F512; Admin</button>";
-  document.getElementById("adminColHead").style.display = "none";
-  renderTable();
+function logoutAdmin() {
+  isAdmin=false;
+  document.getElementById("headerActions").innerHTML =
+    "<button class=\"btn btn-ghost\" onclick=\"openPasswordModal()\">&#x1F512; Admin</button>";
+  document.getElementById("adminBanner").classList.remove("show");
+  showToast("Logged out", "success");
 }
 
-async function reloadData() {
-  document.getElementById("tableWrap").style.display = "none";
-  document.getElementById("loadingState").style.display = "block";
-  document.getElementById("loadingState").innerHTML = "<span class=\"spin\">&#9696;</span><p style=\"margin-top:12px\">Reloading...</p>";
-  await loadData();
-  if (isAdmin) showAdminUI();
-  showToast("새로고침 완료!", "success");
-}
-
-function buildDatalistOptions() {
-  const cats = [...new Set(data.map(d => d.dwb_asset_category).filter(Boolean))].sort();
-  const types = [...new Set(data.map(d => d.dwb_asset_type).filter(Boolean))].sort();
-  document.getElementById("categoryList").innerHTML = cats.map(c => "<option value=\"" + c.replace(/"/g,"&quot;") + "\">").join("");
-  document.getElementById("typeList").innerHTML = types.map(t => "<option value=\"" + t.replace(/"/g,"&quot;") + "\">").join("");
-}
-
-function openEditModal(idx) {
-  editingIndex = idx;
-  const d = idx !== null ? data[idx] : null;
-  document.getElementById("editModalTitle").textContent = idx !== null ? "Edit Product" : "Add Product";
-  document.getElementById("editProduct").value = d ? (d.product||"") : "";
-  document.getElementById("editCategory").value = d ? (d.dwb_asset_category||"") : "";
-  document.getElementById("editType").value = d ? (d.dwb_asset_type||"") : "";
-  document.getElementById("editUnit").value = d ? (d.dwb_unit||"") : "";
-  document.getElementById("editRule").value = d ? (d.lr_rule||"") : "";
-  document.getElementById("editFeeParam").value = d ? (d.fee_parameter||"") : "";
-  document.getElementById("editError").textContent = "";
-  document.getElementById("editModal").classList.add("show");
-}
-
-function saveRecord() {
-  const product = document.getElementById("editProduct").value.trim();
-  const category = document.getElementById("editCategory").value.trim();
-  if (!product || !category) { document.getElementById("editError").textContent = "Product name and Category are required."; return; }
-  const record = { product, dwb_asset_category: category, dwb_asset_type: document.getElementById("editType").value.trim(), dwb_unit: document.getElementById("editUnit").value.trim(), lr_rule: document.getElementById("editRule").value.trim(), fee_parameter: document.getElementById("editFeeParam").value.trim() };
-  if (editingIndex !== null) data[editingIndex] = record; else data.unshift(record);
-  buildTypeFilters(); buildDatalistOptions(); applyFilters(); closeModal("editModal");
-  showToast("저장됨! Google Sheets에도 업데이트해 주세요.", "success");
-}
-
-function openDeleteModal() { document.getElementById("deleteModal").classList.add("show"); }
 function closeModal(id) { document.getElementById(id).classList.remove("show"); }
-function showToast(msg, type) {
-  const t = document.getElementById("toast");
-  t.textContent = msg; t.className = "show " + type;
-  setTimeout(() => t.className = "", 3000);
+function showToast(msg,type) {
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.className="show "+type;
+  setTimeout(()=>t.className="",3000);
 }
 
-document.getElementById("searchInput").addEventListener("input", e => { searchTerm = e.target.value.trim(); page = 1; applyFilters(); showAutocomplete(); });
+document.getElementById("searchInput").addEventListener("input", e => {
+  searchTerm=e.target.value.trim(); page=1; applyFilters(); showAutocomplete();
+});
 document.getElementById("searchInput").addEventListener("keydown", e => {
-  const items = document.querySelectorAll(".ac-item");
-  let active = [...items].findIndex(i => i.classList.contains("active"));
-  if (e.key==="ArrowDown") { active=Math.min(active+1,items.length-1); items.forEach((i,idx)=>i.classList.toggle("active",idx===active)); e.preventDefault(); }
-  else if (e.key==="ArrowUp") { active=Math.max(active-1,0); items.forEach((i,idx)=>i.classList.toggle("active",idx===active)); e.preventDefault(); }
-  else if (e.key==="Enter"&&active>=0) items[active].click();
-  else if (e.key==="Escape") hideAutocomplete();
+  const items=document.querySelectorAll(".ac-item");
+  let active=[...items].findIndex(i=>i.classList.contains("active"));
+  if(e.key==="ArrowDown"){active=Math.min(active+1,items.length-1);items.forEach((i,idx)=>i.classList.toggle("active",idx===active));e.preventDefault();}
+  else if(e.key==="ArrowUp"){active=Math.max(active-1,0);items.forEach((i,idx)=>i.classList.toggle("active",idx===active));e.preventDefault();}
+  else if(e.key==="Enter"&&active>=0)items[active].click();
+  else if(e.key==="Escape")hideAutocomplete();
 });
 document.addEventListener("click", e => {
-  if (!e.target.closest("#searchWrap")) hideAutocomplete();
-  ["passwordModal","editModal","deleteModal"].forEach(id => { if (e.target===document.getElementById(id)) closeModal(id); });
+  if(!e.target.closest("#searchWrap")) hideAutocomplete();
+  if(e.target===document.getElementById("passwordModal")) closeModal("passwordModal");
 });
 
 loadData();
