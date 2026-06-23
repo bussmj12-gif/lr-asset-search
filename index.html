@@ -40,9 +40,6 @@
   .ac-item:hover, .ac-item.active { background: var(--steel); }
   .ac-item mark { background: transparent; color: var(--accent); font-weight: 700; }
   .ac-badge { margin-left: auto; font-size: 11px; background: var(--steel); color: var(--text2); padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
-  .filter-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-  .tag { padding: 3px 10px; border-radius: 20px; font-size: 12px; background: var(--steel); color: var(--text2); cursor: pointer; border: 1px solid var(--border); transition: all 0.15s; }
-  .tag:hover, .tag.active { background: var(--accent); color: var(--navy); border-color: var(--accent); font-weight: 700; }
   .section-title { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
   .section-title h2 { font-size: 22px; font-weight: 700; }
   .record-count { font-size: 13px; padding: 3px 12px; border-radius: 20px; background: var(--steel); color: var(--text2); font-weight: 600; }
@@ -129,7 +126,6 @@
   </div>
   <p class="search-hint">Type to search &middot; <strong id="matchCount">0</strong> products matched &middot; Click column headers to sort</p>
 
-  <div class="filter-tags" id="filterTags"></div>
 
   <div id="loadingState" class="loading">
     <span class="spin">&#9696;</span>
@@ -180,7 +176,7 @@
 const CSV_URL = "https://docs.google.com/spreadsheets/d/1bJwKHm_FqWvYsCo7NcWB-tebcwDgtI6okssfm6m-3l0/export?format=csv&gid=328182646";
 const ADMIN_PW = "bHIyMDI0"; // btoa("lr2024")
 
-let data = [], filtered = [], searchTerm = "", activeType = "";
+let data = [], filtered = [], searchTerm = "";
 let sortCol = "product", sortDir = "asc", page = 1;
 const PAGE_SIZE = 25;
 let isAdmin = false;
@@ -231,7 +227,6 @@ async function loadData() {
     document.getElementById("tableWrap").style.display = "block";
     const now = new Date().toLocaleTimeString("ko-KR");
     document.getElementById("syncInfo").innerHTML = "&#x1F7E2; 최종 동기화: <span>" + now + "</span>";
-    buildTypeFilters();
     applyFilters();
   } catch(e) {
     document.getElementById("loadingState").innerHTML =
@@ -247,27 +242,12 @@ async function reloadData() {
   showToast("새로고침 완료!", "success");
 }
 
-function buildTypeFilters() {
-  const types = [...new Set(data.map(d => d.dwb_asset_type).filter(Boolean))].sort();
-  document.getElementById("filterTags").innerHTML = types.map(t =>
-    "<span class=\"tag\" data-type=\"" + t.replace(/"/g,"&quot;") + "\" onclick=\"filterByType(this)\">" + t +
-    " <span style=\"opacity:0.6;font-size:10px\">(" + data.filter(d=>d.dwb_asset_type===t).length + ")</span></span>"
-  ).join("");
-}
-
-function filterByType(el) {
-  const type = el.dataset.type;
-  activeType = (activeType === type) ? "" : type;
-  document.querySelectorAll(".tag").forEach(t => t.classList.toggle("active", t.dataset.type === activeType));
-  page = 1; applyFilters();
-}
 
 function applyFilters() {
   const q = searchTerm.toLowerCase();
   filtered = data.filter(d => {
     const ms = !q || (d.product||"").toLowerCase().includes(q) || (d.dwb_asset_category||"").toLowerCase().includes(q);
-    const mt = !activeType || d.dwb_asset_type === activeType;
-    return ms && mt;
+    return ms;
   });
   filtered.sort((a,b) => {
     const va=(a[sortCol]||"").toLowerCase(), vb=(b[sortCol]||"").toLowerCase();
