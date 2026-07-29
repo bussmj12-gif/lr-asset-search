@@ -327,13 +327,17 @@ function renderPagination() {
   if (total<=1) { document.getElementById("pagination").innerHTML=""; return; }
   let h = "<button class=\"page-btn\" onclick=\"goPage("+(page-1)+")\" "+(page===1?"disabled":"")+">&#8249; Prev</button>";
   for (let p=1;p<=total;p++) {
-    if (total>7&&Math.abs(p-page)>2&&p!==1&&p!==total) { if(p===2||p===total-1) h+="<span style=\"color:var(--text2);padding:0 4px\">&#8230;</span>"; continue; }
+    const near = Math.abs(p-page)<=2;
+    const edge = p===1||p===total;
+    if(!near&&!edge) {
+      if(p===page-3||p===page+3) h+="<span style=\"color:var(--text2);padding:0 4px\">&#8230;</span>";
+      continue;
+    }
     h+="<button class=\"page-btn "+(p===page?"active":"")+" \" onclick=\"goPage("+p+")\">"+p+"</button>";
   }
   h+="<button class=\"page-btn\" onclick=\"goPage("+(page+1)+")\" "+(page===total?"disabled":"")+">Next &#8250;</button>";
   document.getElementById("pagination").innerHTML=h;
 }
-
 function goPage(p) {
   const total=Math.ceil(filtered.length/PAGE_SIZE);
   if(p<1||p>total) return;
