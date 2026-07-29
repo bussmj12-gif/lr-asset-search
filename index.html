@@ -288,8 +288,8 @@ function sortBy(col) {
 }
 
 function feeParamCell(val) {
-  if(!val) return dash;
-  // "Section X.X" 패턴 감지 → 클릭 링크로 변환
+  const dashStr = "<span style=\"opacity:0.3\">&#8212;</span>";
+  if(!val || !val.trim()) return dashStr;
   const match = val.match(/Section\s+([\d.]+[A-Za-z0-9]*)/i);
   if(match) {
     const secId = match[1];
