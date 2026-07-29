@@ -287,6 +287,20 @@ function sortBy(col) {
   applyFilters();
 }
 
+function feeParamCell(val) {
+  if(!val) return dash;
+  // "Section X.X" 패턴 감지 → 클릭 링크로 변환
+  const match = val.match(/Section\s+([\d.]+[A-Za-z0-9]*)/i);
+  if(match) {
+    const secId = match[1];
+    const url = 'https://bussmj12-gif.github.io/lr-fee-calc/?section=' + encodeURIComponent(secId);
+    return '<a href="'+url+'" target="_blank" title="검사비 계산기로 이동" '+
+      'style="color:#1a7fc1;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">'+
+      val+' <span style="font-size:10px;opacity:.7;">↗</span></a>';
+  }
+  return val;
+}
+
 function renderTable() {
   const pageData = filtered.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
   const tbody = document.getElementById("tableBody");
@@ -303,7 +317,7 @@ function renderTable() {
     "<td>"+(d.dwb_asset_type||dash)+"</td>" +
     "<td class=\"mono\">"+(d.dwb_unit||dash)+"</td>" +
     "<td class=\"mono\" style=\"font-size:12px\">"+(d.lr_rule||dash)+"</td>" +
-    "<td class=\"mono\">"+(d.fee_parameter||dash)+"</td></tr>"
+    "<td class=\"mono\">"+feeParamCell(d.fee_parameter)+"</td></tr>"
   ).join("");
   renderPagination();
 }
