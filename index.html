@@ -290,13 +290,20 @@ function sortBy(col) {
 function feeParamCell(val) {
   const dashStr = "<span style=\"opacity:0.3\">&#8212;</span>";
   if(!val || !val.trim()) return dashStr;
-  const match = val.match(/Section\s+([\d.]+[A-Za-z0-9]*)/i);
-  if(match) {
-    const secId = match[1];
-    const url = 'https://bussmj12-gif.github.io/lr-fee-calc/?section=' + encodeURIComponent(secId);
-    return '<a href="'+url+'" target="_blank" title="검사비 계산기로 이동" '+
-      'style="color:#1a7fc1;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">'+
-      val+' <span style="font-size:10px;opacity:.7;">↗</span></a>';
+
+  // "Section X.X" 패턴을 모두 찾아서 각각 링크로 변환
+  const sectionPattern = /Section\s+[\d.]+[A-Za-z0-9]*/gi;
+  const sections = val.match(sectionPattern);
+
+  if(sections && sections.length > 0) {
+    // val 전체에서 Section X.X 패턴을 링크로 교체
+    return val.replace(sectionPattern, function(match) {
+      const secId = match.replace(/Section\s+/i, '');
+      const url = 'https://bussmj12-gif.github.io/lr-fee-calc/?section=' + encodeURIComponent(secId);
+      return '<a href="'+url+'" target="_blank" title="검사비 계산기로 이동" '+
+        'style="color:#1a7fc1;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:2px;">'+
+        match+' <span style="font-size:10px;opacity:.7;">↗</span></a>';
+    });
   }
   return val;
 }
