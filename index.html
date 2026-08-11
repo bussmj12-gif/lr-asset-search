@@ -15,7 +15,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: "Segoe UI", system-ui, sans-serif; background: var(--navy); color: var(--text); min-height: 100vh; }
-  header { background: var(--navy2); border-bottom: 2px solid var(--accent); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  header { background: var(--navy2); border-bottom: 2px solid var(--accent); padding: 0 32px; display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; height: 64px; }
   .logo { display: flex; align-items: center; gap: 14px; }
   .logo-mark { width: 48px; height: 48px; flex-shrink: 0; border-radius: 6px; }
   .logo-text strong { font-size: 15px; color: var(--accent2); display: block; }
@@ -102,7 +102,10 @@
       <span>Survey Fee Auto Calculation System</span>
     </div>
   </div>
-  <div class="header-actions" id="headerActions">
+  <div style="text-align:center;">
+    <span style="font-size:13px;font-weight:600;color:var(--text2);">LR MEC Survey Fee Auto Calculation System</span>
+  </div>
+  <div class="header-actions" id="headerActions" style="justify-content:flex-end;">
     <button class="btn btn-ghost" onclick="openPasswordModal()">&#x1F512; Admin</button>
     <button class="btn btn-ghost" onclick="openLROnlyModal()" style="margin-left:6px;">&#x1F4CB; LR Only</button>
   </div>
@@ -142,8 +145,8 @@
         <th data-col="dwb_asset_category" onclick="sortBy('dwb_asset_category')">DWB Asset Category</th>
         <th data-col="dwb_asset_type" onclick="sortBy('dwb_asset_type')">Asset Type</th>
         <th data-col="dwb_unit" onclick="sortBy('dwb_unit')">Unit</th>
-        <th data-col="lr_rule" onclick="sortBy('lr_rule')">LR Rule</th>
-        <th data-col="fee_parameter" onclick="sortBy('fee_parameter')">Fee Parameter</th>
+        
+        <th data-col="fee_parameter" onclick="sortBy('fee_parameter')">Fee Tariff Section</th>
       </tr></thead>
       <tbody id="tableBody"></tbody>
     </table>
@@ -332,7 +335,7 @@ function renderTable() {
     "<td class=\"category\">"+hl(d.dwb_asset_category||"")+"</td>" +
     "<td>"+(d.dwb_asset_type||dash)+"</td>" +
     "<td class=\"mono\">"+(d.dwb_unit||dash)+"</td>" +
-    "<td class=\"mono\" style=\"font-size:12px\">"+(d.lr_rule||dash)+"</td>" +
+    
     "<td class=\"mono\">"+feeParamCell(d.fee_parameter)+"</td></tr>"
   ).join("");
   renderPagination();
