@@ -107,9 +107,6 @@
 <main>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px;">
     <div style="display:flex;align-items:center;gap:12px;">
-      <div id="lrOnlyBtnArea">
-        <button class="btn btn-ghost" onclick="openLROnlyModal()">&#x1F4CB; LR Only</button>
-      </div>
       <h2 style="font-size:22px;font-weight:700;">Product Search</h2>
       <span class="record-count" id="recordCount">Loading...</span>
     </div>
@@ -184,27 +181,19 @@
 <script>
 const CSV_URL = "https://docs.google.com/spreadsheets/d/1bJwKHm_FqWvYsCo7NcWB-tebcwDgtI6okssfm6m-3l0/export?format=csv&gid=328182646";
 const ADMIN_PW = "bHIyMDI0"; // btoa("lr2024")
-const LRONLY_PW = "bHIxMDA0"; // btoa("lr1004")
 
 let data = [], filtered = [], searchTerm = "";
 let sortCol = "product", sortDir = "asc", page = 1;
 const PAGE_SIZE = 25;
 let isAdmin = false;
-let isLROnly = false;
 
 function checkPassword() {
   const pw = document.getElementById("passwordInput").value;
   if (btoa(pw) === ADMIN_PW) {
-    isAdmin = true; isLROnly = true;
+    isAdmin = true;
     closeModal("passwordModal");
     showAdminUI();
     showToast("Admin mode enabled", "success");
-    renderTable();
-  } else if (btoa(pw) === LRONLY_PW) {
-    isLROnly = true;
-    closeModal("passwordModal");
-    showLROnlyUI();
-    showToast("LR Only mode enabled", "success");
     renderTable();
   } else {
     document.getElementById("pwError").textContent = "Incorrect password. Please try again.";
@@ -309,18 +298,14 @@ function feeParamCell(val) {
   const dashStr = "<span style=\"opacity:0.3\">&#8212;</span>";
   if(!val || !val.trim()) return dashStr;
 
-  // LR Only 또는 Admin 로그인 시에만 Section 링크 활성화
-  if(isLROnly || isAdmin) {
-    return val.replace(/Section\s+[\d.]+[A-Za-z0-9]*/gi, function(match) {
+  // Section 링크 항상 활성화 (비밀번호 없음)
+  return val.replace(/Section\s+[\d.]+[A-Za-z0-9]*/gi, function(match) {
       const secId = match.replace(/Section\s+/i, '');
       const url = 'https://bussmj12-gif.github.io/lr-fee-calc/?section=' + encodeURIComponent(secId);
       return '<a href="'+url+'" target="_blank" title="검사비 계산기로 이동" '+
         'style="color:#1a7fc1;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:2px;">'+
         match+' <span style="font-size:10px;opacity:.7;">↗</span></a>';
     });
-  }
-  // 비로그인: 텍스트만 표시
-  return val;
 }
 
 function renderTable() {
@@ -378,29 +363,13 @@ function openPasswordModal() {
 function showAdminUI() {
   document.getElementById("adminBtnArea").innerHTML =
     "<button class=\"btn btn-ghost\" onclick=\"logoutAdmin()\">&#x1F513; Logout (Admin)</button>";
-  document.getElementById("lrOnlyBtnArea").innerHTML = "";
   document.getElementById("adminBanner").classList.add("show");
 }
 
-function showLROnlyUI() {
-  document.getElementById("lrOnlyBtnArea").innerHTML =
-    "<button class=\"btn btn-ghost\" onclick=\"logoutAdmin()\">&#x1F513; Logout (LR Only)</button>";
-}
-
-function openLROnlyModal() {
-  if (isLROnly) { logoutAdmin(); return; }
-  document.getElementById("passwordInput").value="";
-  document.getElementById("pwError").textContent="";
-  document.getElementById("passwordModal").classList.add("show");
-  setTimeout(()=>document.getElementById("passwordInput").focus(),100);
-}
-
 function logoutAdmin() {
-  isAdmin=false; isLROnly=false;
+  isAdmin=false;
   const aBtn = document.getElementById("adminBtnArea");
-  const lBtn = document.getElementById("lrOnlyBtnArea");
   if(aBtn) aBtn.innerHTML = "<button class=\"btn btn-ghost\" onclick=\"openPasswordModal()\">&#x1F512; Admin</button>";
-  if(lBtn) lBtn.innerHTML = "<button class=\"btn btn-ghost\" onclick=\"openLROnlyModal()\">&#x1F4CB; LR Only</button>";
   document.getElementById("adminBanner").classList.remove("show");
   showToast("Logged out", "success");
   renderTable();
